@@ -37,7 +37,8 @@
 @property(nonatomic, weak, readwrite)   id<CardIOVideoStreamDelegate> delegate;
 @property(nonatomic, strong, readwrite) UIFont *instructionsFont;
 @property(nonatomic, assign, readwrite) BOOL suppressFauxCardLayer;
-
+@property(nonatomic, strong, readwrite) UIImageView *cardLogo1;
+@property(nonatomic, strong, readwrite) UIImageView *cardLogo2;
 @end
 
 #endif

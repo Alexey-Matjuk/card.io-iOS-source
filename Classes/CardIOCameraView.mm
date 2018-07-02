@@ -45,7 +45,7 @@
 @property(nonatomic, assign, readwrite) BOOL videoStreamSessionWasRunningBeforeRotation;
 @property(nonatomic, strong, readwrite) CardIOConfig *config;
 @property(nonatomic, assign, readwrite) BOOL hasLaidoutCameraButtons;
-
+@property(nonatomic, strong, readwrite) UIStackView *cardLogoStack;
 #if CARDIO_DEBUG
 @property(nonatomic, strong, readwrite) UITextField *debugTextField;
 #endif
@@ -168,6 +168,19 @@
     if(scanOverlayView) {
       [self addSubview:scanOverlayView];
     }
+
+    _cardLogoStack = [[UIStackView alloc] init];
+    [self addSubview:self.cardLogoStack];
+
+    _cardLogo1 = [[UIImageView alloc] init];
+    _cardLogo2 = [[UIImageView alloc] init];
+    [_cardLogoStack addArrangedSubview:self.cardLogo1];
+    [_cardLogoStack addArrangedSubview:self.cardLogo2];
+    _cardLogoStack.axis = UILayoutConstraintAxisHorizontal;
+    _cardLogoStack.distribution = UIStackViewDistributionFillProportionally;
+    _cardLogoStack.alignment = UIStackViewAlignmentFill;
+    _cardLogoStack.spacing = 15.0f;
+    
   }
   return self;
 }
@@ -280,12 +293,41 @@
                                                cameraPreviewFrame.origin.y + 10.0f,
                                                self.lightButton.frame.size);
 
-
   InterfaceToDeviceOrientationDelta delta = orientationDelta([UIApplication sharedApplication].statusBarOrientation, self.deviceOrientation);
   CGFloat rotation = -rotationForOrientationDelta(delta); // undo the orientation delta
   CGAffineTransform r = CGAffineTransformMakeRotation(rotation);
+
+  CGRect rect = [self guideFrame];
+  CGFloat w = 120.0f;
+  CGFloat h = 32.0f;
+  switch (delta) {
+    case InterfaceToDeviceOrientationSame: {
+      CGFloat x = rect.origin.x;
+      CGFloat y = rect.origin.y + cameraPreviewFrame.origin.y + rect.size.height + 25.0f;
+      self.cardLogoStack.frame = CGRectMake(x, y, w, h);
+    }
+      break;
+    case InterfaceToDeviceOrientationRotatedClockwise: {
+      CGFloat x = rect.origin.y - 25.0f - h;
+      CGFloat y = rect.origin.x + cameraPreviewFrame.origin.x + rect.origin.x;
+      self.cardLogoStack.frame = CGRectMake(x, y, h, w);
+    }
+      break;
+    case InterfaceToDeviceOrientationUpsideDown:
+      break;
+    case InterfaceToDeviceOrientationRotatedCounterclockwise:{
+      CGFloat x = rect.origin.y + 25.0f + rect.size.width;
+      CGFloat y = rect.origin.y + rect.size.height + cameraPreviewFrame.origin.y - w;
+      self.cardLogoStack.frame = CGRectMake(x, y, h, w);
+    }
+      break;
+    default:
+      break;
+  }
+
   self.logoView.transform = r;
   self.lightButton.transform = r;
+  self.cardLogoStack.transform = r;
   
 #if CARDIO_DEBUG
   _debugTextField.frame = CGRectWithXYAndSize(cameraPreviewFrame.origin.x + 10.0f,

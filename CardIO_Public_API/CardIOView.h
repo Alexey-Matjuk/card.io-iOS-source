@@ -113,6 +113,8 @@ extern NSString * const CardIOCurrentScanningOrientation;
 /// Returned as an NSNumber wrapping an NSTimeInterval (i.e. a double).
 extern NSString * const CardIOScanningOrientationAnimationDuration;
 
+@property (nonatomic, strong) UIImage *cardLogoImage1;
+@property (nonatomic, strong) UIImage *cardLogoImage2;
 
 #pragma mark - Property you MAY get
 

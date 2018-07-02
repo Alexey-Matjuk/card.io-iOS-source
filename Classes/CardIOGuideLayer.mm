@@ -18,8 +18,8 @@
 #pragma mark - Colors
 
 #define kStandardMinimumBoundsWidth 300.0f
-#define kStandardLineWidth 12.0f
-#define kStandardCornerSize 50.0f
+#define kStandardLineWidth 4.0f
+#define kStandardCornerSize 24.0f
 #define kAdjustFudge 0.2f  // Because without this, we see a mini gap between edge path and corner path.
 
 #define kEdgeDecay 0.5f
@@ -95,11 +95,11 @@ typedef enum {
     _topRightLayer = [CAShapeLayer layer];
     _bottomLeftLayer = [CAShapeLayer layer];
     _bottomRightLayer = [CAShapeLayer layer];
-    
-    _fauxCardLayer.cornerRadius = 0.0f;
+
+    _fauxCardLayer.cornerRadius = 16.0f;
     _fauxCardLayer.masksToBounds = YES;
     _fauxCardLayer.borderWidth = 0.0f;
-    
+
     _fauxCardLayer.startPoint = CGPointMake(0.5f, 0.0f); // top center
     _fauxCardLayer.endPoint = CGPointMake(0.5f, 1.0f); // bottom center
     _fauxCardLayer.locations = [NSArray arrayWithObjects:
@@ -108,7 +108,7 @@ typedef enum {
                                 nil];
     _fauxCardLayer.colors = [NSArray arrayWithObjects:
                              (id)[UIColor colorWithWhite:1.0f alpha:0.2f].CGColor,
-                             (id)[UIColor colorWithWhite:0.0f alpha:0.2f].CGColor,
+                             (id)[UIColor colorWithWhite:1.0f alpha:0.05f].CGColor,
                              nil];
     [self addSublayer:_fauxCardLayer];
 
@@ -144,7 +144,7 @@ typedef enum {
       layer.lineWidth = [self lineWidth];
       layer.fillColor = [UIColor clearColor].CGColor;
       layer.strokeColor = kDefaultGuideColor.CGColor;
-      
+
       [self addSublayer:layer];
     }
     
@@ -195,8 +195,10 @@ typedef enum {
       break;
   }
   CGPathMoveToPoint(path, NULL, pStart.x, pStart.y);
-  CGPathAddLineToPoint(path, NULL, point.x, point.y);
-  CGPathAddLineToPoint(path, NULL, pEnd.x, pEnd.y);
+  CGPathAddCurveToPoint(path, NULL, pStart.x, pStart.y, point.x, point.y, pEnd.x, pEnd.y);
+//  CGPathAddLineToPoint(path, NULL, point.x, point.y);
+//  CGPathAddLineToPoint(path, NULL, pEnd.x, pEnd.y);
+
   return path;
 }
 
@@ -370,7 +372,7 @@ typedef enum {
   [self animateCornerLayer:self.topRightLayer atPoint:topRight withPositionType:kTopRight];
   [self animateCornerLayer:self.bottomLeftLayer atPoint:bottomLeft withPositionType:kBottomLeft];
   [self animateCornerLayer:self.bottomRightLayer atPoint:bottomRight withPositionType:kBottomRight];
-  
+
   [self animateCardMask:guideFrame];
 }
 
@@ -407,24 +409,40 @@ typedef enum {
     self.leftLayer.hidden = NO;
   } else {
     if (self.edgeScoreTop > kEdgeOnThreshold) {
-      self.topLayer.hidden = NO;
+//      self.topLayer.hidden = NO;
+      self.topLeftLayer.strokeColor = _guideColor.CGColor;
+      self.topRightLayer.strokeColor = _guideColor.CGColor;
     } else if(self.edgeScoreTop < kEdgeOffThreshold) {
-      self.topLayer.hidden = YES;
+//      self.topLayer.hidden = YES;
+      self.topLeftLayer.strokeColor = [UIColor whiteColor].CGColor;
+      self.topRightLayer.strokeColor = [UIColor whiteColor].CGColor;
     }
     if (self.edgeScoreRight > kEdgeOnThreshold) {
-      self.rightLayer.hidden = NO;
+//      self.rightLayer.hidden = NO;
+      self.topRightLayer.strokeColor = _guideColor.CGColor;
+      self.bottomRightLayer.strokeColor = _guideColor.CGColor;
     } else if(self.edgeScoreRight < kEdgeOffThreshold) {
-      self.rightLayer.hidden = YES;
+//      self.rightLayer.hidden = YES;
+      self.topRightLayer.strokeColor = [UIColor whiteColor].CGColor;
+      self.bottomRightLayer.strokeColor = [UIColor whiteColor].CGColor;
     }
     if (self.edgeScoreBottom > kEdgeOnThreshold) {
-      self.bottomLayer.hidden = NO;
+//      self.bottomLayer.hidden = NO;
+      self.bottomRightLayer.strokeColor = _guideColor.CGColor;
+      self.bottomLeftLayer.strokeColor =  _guideColor.CGColor;
     } else if(self.edgeScoreBottom < kEdgeOffThreshold) {
-      self.bottomLayer.hidden = YES;
+//      self.bottomLayer.hidden = YES;
+      self.bottomRightLayer.strokeColor = [UIColor whiteColor].CGColor;
+      self.bottomLeftLayer.strokeColor =  [UIColor whiteColor].CGColor;
     }
     if (self.edgeScoreLeft > kEdgeOnThreshold) {
-      self.leftLayer.hidden = NO;
+//      self.leftLayer.hidden = NO;
+      self.topLeftLayer.strokeColor = _guideColor.CGColor;
+      self.bottomLeftLayer.strokeColor = _guideColor.CGColor;
     } else if(self.edgeScoreLeft < kEdgeOffThreshold) {
-      self.leftLayer.hidden = YES;
+//      self.leftLayer.hidden = YES;
+      self.topLeftLayer.strokeColor = [UIColor whiteColor].CGColor;
+      self.bottomLeftLayer.strokeColor = [UIColor whiteColor].CGColor;
     }
   }
 }
@@ -497,9 +515,17 @@ typedef enum {
                          nil];
 
   SuppressCAAnimation(^{
-    for(CAShapeLayer *layer in edgeLayers) {
-      layer.strokeColor = self.guideColor.CGColor;
-    }
+//    for(CAShapeLayer *layer in edgeLayers) {
+//      layer.strokeColor = self.guideColor.CGColor;
+//    }
+    self.topLayer.strokeColor = [[UIColor whiteColor] colorWithAlphaComponent:0.25f].CGColor;
+    self.bottomLayer.strokeColor = [[UIColor whiteColor] colorWithAlphaComponent:0.25f].CGColor;
+    self.leftLayer.strokeColor = [[UIColor whiteColor] colorWithAlphaComponent:0.25f].CGColor;
+    self.rightLayer.strokeColor = [[UIColor whiteColor] colorWithAlphaComponent:0.25f].CGColor;
+    self.topLeftLayer.strokeColor = [UIColor whiteColor].CGColor;
+    self.topRightLayer.strokeColor = [UIColor whiteColor].CGColor;
+    self.bottomLeftLayer.strokeColor = [UIColor whiteColor].CGColor;
+    self.bottomRightLayer.strokeColor = [UIColor whiteColor].CGColor;
   });
 }
 

@@ -154,6 +154,7 @@ NSString * const CardIOScanningOrientationAnimationDuration = @"CardIOScanningOr
     self.cameraView = [[CardIOCameraView alloc] initWithFrame:CGRectZeroWithSize(self.frame.size)
                                                      delegate:self
                                                        config:self.config];
+
     [self addSubview:self.cameraView];
     [self.cameraView willAppear];
     
@@ -169,6 +170,16 @@ NSString * const CardIOScanningOrientationAnimationDuration = @"CardIOScanningOr
     [self.cameraView removeFromSuperview];
     self.cameraView = nil;
   }
+}
+
+- (void)setCardLogoImage1:(UIImage *)cardLogoImage1 {
+  _cardLogoImage1 = cardLogoImage1;
+  self.cameraView.cardLogo1.image = _cardLogoImage1;
+}
+
+- (void)setCardLogoImage2:(UIImage *)cardLogoImage2 {
+  _cardLogoImage2 = cardLogoImage2;
+  self.cameraView.cardLogo2.image = _cardLogoImage2;
 }
 
 #pragma mark - Property accessors (passthroughs to CardIOCameraView)
