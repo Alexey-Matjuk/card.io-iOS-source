@@ -177,10 +177,10 @@
     [_cardLogoStack addArrangedSubview:self.cardLogo1];
     [_cardLogoStack addArrangedSubview:self.cardLogo2];
     _cardLogoStack.axis = UILayoutConstraintAxisHorizontal;
-    _cardLogoStack.distribution = UIStackViewDistributionFillProportionally;
-    _cardLogoStack.alignment = UIStackViewAlignmentFill;
+    _cardLogoStack.distribution = UIStackViewDistributionEqualSpacing;
+    _cardLogoStack.alignment = UIStackViewAlignmentCenter;
     _cardLogoStack.spacing = 15.0f;
-    
+
   }
   return self;
 }
@@ -299,7 +299,7 @@
 
   CGRect rect = [self guideFrame];
   CGFloat w = 110.0f;
-  CGFloat h = 20.0f;
+  CGFloat h = 30.0f;
   switch (delta) {
     case InterfaceToDeviceOrientationSame: {
       CGFloat x = rect.origin.x;
@@ -508,8 +508,6 @@
 
   self.guideLayerLabel.bounds = internalGuideRect;
   [self.guideLayerLabel sizeToFit];
-  self.guideLayerLabel.backgroundColor = [UIColor redColor];
-  self.guideLayerLabel.text = @"Align your card to fit inside the frame. Scanning will start automatically.";
   CGRect cameraPreviewFrame = [self cameraPreviewFrame];
   CGFloat x = internalGuideFrame.origin.x + 10.0f;
   CGFloat y = internalGuideFrame.origin.y + internalGuideFrame.size.height - self.guideLayerLabel.bounds.size.height - 10.0f + cameraPreviewFrame.origin.y;
