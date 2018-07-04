@@ -55,6 +55,8 @@
 /// Set the scan instruction text. If nil, use the default text. Defaults to nil.
 /// Use newlines as desired to control the wrapping of text onto multiple lines.
 @property(nonatomic, copy, readwrite) NSString *scanInstructions;
+//font for instructions
+@property (nonatomic, strong) UIFont* instructionsFont;
 
 /// A custom view that will be overlaid atop the entire scan view. Defaults to nil.
 /// If you set a scanOverlayView, be sure to:
@@ -112,10 +114,9 @@ extern NSString * const CardIOCurrentScanningOrientation;
 ///
 /// Returned as an NSNumber wrapping an NSTimeInterval (i.e. a double).
 extern NSString * const CardIOScanningOrientationAnimationDuration;
-
+//images at the bootom of card guide frame
 @property (nonatomic, strong) UIImage *cardLogoImage1;
 @property (nonatomic, strong) UIImage *cardLogoImage2;
-
 #pragma mark - Property you MAY get
 
 /// The actual camera preview area within the CardIOView. Location is relative to the CardIOView's origin.

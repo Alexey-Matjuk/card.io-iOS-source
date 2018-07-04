@@ -182,6 +182,11 @@ NSString * const CardIOScanningOrientationAnimationDuration = @"CardIOScanningOr
   self.cameraView.cardLogo2.image = _cardLogoImage2;
 }
 
+- (void)setInstructionsFont:(UIFont *)instructionsFont {
+  _instructionsFont = instructionsFont;
+  self.cameraView.instructionsFont = instructionsFont;
+}
+
 #pragma mark - Property accessors (passthroughs to CardIOCameraView)
 
 - (CGRect)cameraPreviewFrame {

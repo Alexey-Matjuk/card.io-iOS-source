@@ -115,7 +115,7 @@
     }
     _guideLayerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     self.guideLayerLabel.text = scanInstructions;
-    self.guideLayerLabel.textAlignment = NSTextAlignmentCenter;
+    self.guideLayerLabel.textAlignment = NSTextAlignmentLeft;
     self.guideLayerLabel.backgroundColor = [UIColor clearColor];
     self.guideLayerLabel.textColor = kGuideLayerTextColor;
     self.guideLayerLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:kStandardInstructionsFontSize];
@@ -298,8 +298,8 @@
   CGAffineTransform r = CGAffineTransformMakeRotation(rotation);
 
   CGRect rect = [self guideFrame];
-  CGFloat w = 120.0f;
-  CGFloat h = 32.0f;
+  CGFloat w = 110.0f;
+  CGFloat h = 20.0f;
   switch (delta) {
     case InterfaceToDeviceOrientationSame: {
       CGFloat x = rect.origin.x;
@@ -504,14 +504,21 @@
   CGFloat width = MAX(internalGuideFrame.size.width, internalGuideFrame.size.height);
   CGFloat height = MIN(internalGuideFrame.size.width, internalGuideFrame.size.height);
   
-  CGRect internalGuideRect = CGRectZeroWithSize(CGSizeMake(width, height));
+  CGRect internalGuideRect = CGRectZeroWithSize(CGSizeMake(width * 0.85f, height));
 
   self.guideLayerLabel.bounds = internalGuideRect;
   [self.guideLayerLabel sizeToFit];
-
+  self.guideLayerLabel.backgroundColor = [UIColor redColor];
+  self.guideLayerLabel.text = @"Align your card to fit inside the frame. Scanning will start automatically.";
   CGRect cameraPreviewFrame = [self cameraPreviewFrame];
-  self.guideLayerLabel.center = CGPointMake(CGRectGetMidX(cameraPreviewFrame), CGRectGetMidY(cameraPreviewFrame));
-  
+  CGFloat x = internalGuideFrame.origin.x + 10.0f;
+  CGFloat y = internalGuideFrame.origin.y + internalGuideFrame.size.height - self.guideLayerLabel.bounds.size.height - 10.0f + cameraPreviewFrame.origin.y;
+  CGFloat w = self.guideLayerLabel.bounds.size.width;
+  CGFloat h = self.guideLayerLabel.bounds.size.height;
+
+  self.guideLayerLabel.frame = CGRectMake(x, y, w, h);
+//  self.guideLayerLabel.center = CGPointMake(CGRectGetMidX(cameraPreviewFrame) - 5.0f, CGRectGetMidY(cameraPreviewFrame) + self.guideLayerLabel.bounds.size.height / 2 );
+
   internalGuideRect.size.height = 9999.9f;
   CGRect textRect = [self.guideLayerLabel textRectForBounds:internalGuideRect limitedToNumberOfLines:0];
   while (textRect.size.height > height && self.guideLayerLabel.font.pointSize > kMinimumInstructionsFontSize) {
