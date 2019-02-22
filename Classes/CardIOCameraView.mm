@@ -302,7 +302,7 @@
   CGFloat h = 30.0f;
   switch (delta) {
     case InterfaceToDeviceOrientationSame: {
-      CGFloat x = rect.origin.x;
+      CGFloat x = rect.origin.x + cameraPreviewFrame.origin.x;
       CGFloat y = rect.origin.y + cameraPreviewFrame.origin.y + rect.size.height + 25.0f;
       self.cardLogoStack.frame = CGRectMake(x, y, w, h);
     }
