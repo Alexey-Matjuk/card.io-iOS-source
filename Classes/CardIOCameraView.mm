@@ -506,19 +506,17 @@
   CGFloat width = MAX(internalGuideFrame.size.width, internalGuideFrame.size.height);
   CGFloat height = MIN(internalGuideFrame.size.width, internalGuideFrame.size.height);
   
-  CGRect internalGuideRect = CGRectZeroWithSize(CGSizeMake(width * 0.85f, height));
-
-  self.guideLayerLabel.bounds = internalGuideRect;
-  [self.guideLayerLabel sizeToFit];
+  CGRect internalGuideRect = CGRectZeroWithSize(CGSizeMake(width, height));
   CGRect cameraPreviewFrame = [self cameraPreviewFrame];
-  CGFloat x = internalGuideFrame.origin.x + 10.0f;
-  CGFloat y = internalGuideFrame.origin.y + internalGuideFrame.size.height - self.guideLayerLabel.bounds.size.height - 10.0f + cameraPreviewFrame.origin.y;
-  CGFloat w = self.guideLayerLabel.bounds.size.width;
-  CGFloat h = self.guideLayerLabel.bounds.size.height;
 
+  // Put guide label inside guide area
+  CGFloat w = internalGuideRect.size.width;
+  CGFloat h = internalGuideRect.size.height;
+  CGFloat x = internalGuideFrame.origin.x + cameraPreviewFrame.origin.x;
+  CGFloat y = internalGuideFrame.origin.y + cameraPreviewFrame.origin.y + height - h;
   self.guideLayerLabel.frame = CGRectMake(x, y, w, h);
-//  self.guideLayerLabel.center = CGPointMake(CGRectGetMidX(cameraPreviewFrame) - 5.0f, CGRectGetMidY(cameraPreviewFrame) + self.guideLayerLabel.bounds.size.height / 2 );
 
+  // Reduce font size of guide label if needed
   internalGuideRect.size.height = 9999.9f;
   CGRect textRect = [self.guideLayerLabel textRectForBounds:internalGuideRect limitedToNumberOfLines:0];
   while (textRect.size.height > height && self.guideLayerLabel.font.pointSize > kMinimumInstructionsFontSize) {
@@ -526,7 +524,49 @@
     textRect = [self.guideLayerLabel textRectForBounds:internalGuideRect limitedToNumberOfLines:0];
   }
 
+  // Rotate guide label
   [self orientGuideLayerLabel];
+
+  InterfaceToDeviceOrientationDelta delta = orientationDelta([UIApplication sharedApplication].statusBarOrientation, self.deviceOrientation);
+
+  // Fix guide label frame after rotaion
+  switch (delta) {
+    case InterfaceToDeviceOrientationRotatedClockwise:
+    case InterfaceToDeviceOrientationRotatedCounterclockwise:
+      self.guideLayerLabel.frame = CGRectMake(x, y, h, w);
+      break;
+    case InterfaceToDeviceOrientationUpsideDown:
+    case InterfaceToDeviceOrientationSame: {
+      self.guideLayerLabel.frame = CGRectMake(x, y, w, h);
+    }
+      break;
+  }
+
+  // Shrink guide label
+  [self.guideLayerLabel sizeToFit];
+
+  // Move shrinked guide label to bottom of guide area
+  CGRect shrinkedFrame = self.guideLayerLabel.frame;
+
+  switch (delta) {
+    case InterfaceToDeviceOrientationRotatedClockwise: {
+      shrinkedFrame.origin.x -= (h - shrinkedFrame.size.width) / 2;
+    }
+      break;
+    case InterfaceToDeviceOrientationRotatedCounterclockwise: {
+      shrinkedFrame.origin.x += (h - shrinkedFrame.size.width) / 2;
+    }
+      break;
+    case InterfaceToDeviceOrientationUpsideDown: {
+      shrinkedFrame.origin.y -= (h - shrinkedFrame.size.height) / 2;
+    }
+      break;
+    case InterfaceToDeviceOrientationSame: {
+      shrinkedFrame.origin.y += (h - shrinkedFrame.size.height);
+    }
+      break;
+  }
+  self.guideLayerLabel.frame = shrinkedFrame;
 }
 
 #pragma mark - CardIOVideoStreamDelegate methods
