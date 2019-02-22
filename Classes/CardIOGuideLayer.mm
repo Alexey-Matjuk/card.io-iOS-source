@@ -19,7 +19,7 @@
 
 #define kStandardMinimumBoundsWidth 300.0f
 #define kStandardLineWidth 4.0f
-#define kStandardCornerSize 24.0f
+#define kStandardCornerSize 13.0f
 #define kAdjustFudge 0.2f  // Because without this, we see a mini gap between edge path and corner path.
 
 #define kEdgeDecay 0.5f
@@ -107,8 +107,7 @@ typedef enum {
                                 [NSNumber numberWithFloat:1.0f],
                                 nil];
     _fauxCardLayer.colors = [NSArray arrayWithObjects:
-                             (id)[UIColor colorWithWhite:1.0f alpha:0.2f].CGColor,
-                             (id)[UIColor colorWithWhite:1.0f alpha:0.05f].CGColor,
+                             (id)[UIColor clearColor].CGColor,
                              nil];
     [self addSublayer:_fauxCardLayer];
 
@@ -116,7 +115,6 @@ typedef enum {
     _backgroundOverlay.cornerRadius = 0.0f;
     _backgroundOverlay.masksToBounds = YES;
     _backgroundOverlay.borderWidth = 0.0f;
-    _backgroundOverlay.fillColor = [UIColor colorWithWhite:0.0f alpha:0.7f].CGColor;
     [self addSublayer:_backgroundOverlay];
 
 #if CARDIO_DEBUG
@@ -140,7 +138,7 @@ typedef enum {
     
     for(CAShapeLayer *layer in edgeLayers) {
       layer.frame = CGRectZeroWithSize(self.bounds.size);
-      layer.lineCap = kCALineCapButt;
+      layer.lineCap = kCALineCapRound;
       layer.lineWidth = [self lineWidth];
       layer.fillColor = [UIColor clearColor].CGColor;
       layer.strokeColor = kDefaultGuideColor.CGColor;
@@ -194,10 +192,35 @@ typedef enum {
     default:
       break;
   }
-  CGPathMoveToPoint(path, NULL, pStart.x, pStart.y);
+
+  CGPoint lineStart = pStart,
+            lineEnd = pEnd;
+
+  switch (posType) {
+    case kTopLeft:
+      lineStart.x -= 12;
+      lineEnd.y += 12;
+      break;
+    case kTopRight:
+      lineStart.x -= 12;
+      lineEnd.y -= 12;
+      break;
+    case kBottomLeft:
+      lineStart.x += 12;
+      lineEnd.y += 12;
+      break;
+    case kBottomRight:
+      lineStart.x += 12;
+      lineEnd.y -= 12;
+      break;
+    default:
+      break;
+  }
+
+  CGPathMoveToPoint(path, NULL, lineStart.x, lineStart.y);
+  CGPathAddLineToPoint(path, NULL, pStart.x, pStart.y);
   CGPathAddCurveToPoint(path, NULL, pStart.x, pStart.y, point.x, point.y, pEnd.x, pEnd.y);
-//  CGPathAddLineToPoint(path, NULL, point.x, point.y);
-//  CGPathAddLineToPoint(path, NULL, pEnd.x, pEnd.y);
+  CGPathAddLineToPoint(path, NULL, lineEnd.x, lineEnd.y);
 
   return path;
 }
@@ -337,6 +360,9 @@ typedef enum {
   SuppressCAAnimation(^{
     self.backgroundOverlay.frame = self.bounds;
   });
+  CGFloat inset = [self lineWidth] / 2;
+  guideFrame = CGRectInset(guideFrame, inset, inset);
+
   CGPathRef path = [self newMaskPathForGuideFrame:guideFrame outerFrame:self.bounds];
   [self animateLayer:self.backgroundOverlay toNewPath:path];
   CGPathRelease(path);
@@ -555,7 +581,7 @@ typedef enum {
   if (found) {
     self.backgroundOverlay.fillColor = [UIColor colorWithWhite:0.0f alpha:0.8f].CGColor;
   } else {
-    self.backgroundOverlay.fillColor = [UIColor colorWithWhite:0.0f alpha:0.0f].CGColor;
+    self.backgroundOverlay.fillColor = [UIColor colorWithWhite:0.0f alpha:0.3f].CGColor;
   }
   [self updateStrokes];
 }

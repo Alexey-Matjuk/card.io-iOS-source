@@ -501,6 +501,8 @@
 #pragma mark - CardIOGuideLayerDelegate method
 
 - (void)guideLayerDidLayout:(CGRect)internalGuideFrame {
+  CGFloat inset = 24.0; // Inner margin between guide label and edges of guide area
+  internalGuideFrame = CGRectInset(internalGuideFrame, inset, inset);
   CGFloat width = MAX(internalGuideFrame.size.width, internalGuideFrame.size.height);
   CGFloat height = MIN(internalGuideFrame.size.width, internalGuideFrame.size.height);
   
